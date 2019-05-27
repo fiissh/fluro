@@ -77,14 +77,19 @@ class RouteTree {
       _hasDefaultRoute = true;
       return;
     }
+
     if (path.startsWith("/")) {
       path = path.substring(1);
     }
+
     List<String> pathComponents = path.split('/');
+
     RouteTreeNode parent;
+
     for (int i = 0; i < pathComponents.length; i++) {
       String component = pathComponents[i];
       RouteTreeNode node = _nodeForComponent(component, parent);
+
       if (node == null) {
         RouteTreeNodeType type = _typeForComponent(component);
         node = new RouteTreeNode(component, type);
@@ -95,6 +100,7 @@ class RouteTree {
           parent.nodes.add(node);
         }
       }
+
       if (i == pathComponents.length - 1) {
         if (node.routes == null) {
           node.routes = [route];
@@ -116,12 +122,10 @@ class RouteTree {
       components = ["/"];
     }
 
-    Map<RouteTreeNode, RouteTreeNodeMatch> nodeMatches =
-        <RouteTreeNode, RouteTreeNodeMatch>{};
+    Map<RouteTreeNode, RouteTreeNodeMatch> nodeMatches = <RouteTreeNode, RouteTreeNodeMatch>{};
     List<RouteTreeNode> nodesToCheck = _nodes;
     for (String checkComponent in components) {
-      Map<RouteTreeNode, RouteTreeNodeMatch> currentMatches =
-          <RouteTreeNode, RouteTreeNodeMatch>{};
+      Map<RouteTreeNode, RouteTreeNodeMatch> currentMatches = <RouteTreeNode, RouteTreeNodeMatch>{};
       List<RouteTreeNode> nextNodes = <RouteTreeNode>[];
       for (RouteTreeNode node in nodesToCheck) {
         String pathPart = checkComponent;
@@ -134,8 +138,7 @@ class RouteTree {
         bool isMatch = (node.part == pathPart || node.isParameter());
         if (isMatch) {
           RouteTreeNodeMatch parentMatch = nodeMatches[node.parent];
-          RouteTreeNodeMatch match =
-              new RouteTreeNodeMatch.fromMatch(parentMatch, node);
+          RouteTreeNodeMatch match = new RouteTreeNodeMatch.fromMatch(parentMatch, node);
           if (node.isParameter()) {
             String paramKey = node.part.substring(1);
             match.parameters[paramKey] = [pathPart];
@@ -161,9 +164,7 @@ class RouteTree {
       RouteTreeNodeMatch match = matches.first;
       RouteTreeNode nodeToUse = match.node;
 //			print("using match: ${match}, ${nodeToUse?.part}, ${match?.parameters}");
-      if (nodeToUse != null &&
-          nodeToUse.routes != null &&
-          nodeToUse.routes.length > 0) {
+      if (nodeToUse != null && nodeToUse.routes != null && nodeToUse.routes.length > 0) {
         List<AppRoute> routes = nodeToUse.routes;
         AppRouteMatch routeMatch = new AppRouteMatch(routes[0]);
         routeMatch.parameters = match.parameters;
@@ -184,7 +185,7 @@ class RouteTree {
       for (int i = 0; i < level; i++) {
         indent += "    ";
       }
-      print("$indent${node.part}: total routes=${node.routes.length}");
+      print("$indent${node.part}: total routes=${node.routes.length} total nodes=${node.nodes.length}");
       if (node.nodes != null && node.nodes.length > 0) {
         _printSubTree(parent: node, level: level + 1);
       }

@@ -23,6 +23,7 @@ class AppComponentState extends State<AppComponent> {
     final router = new Router();
     Routes.configureRoutes(router);
     Application.router = router;
+    Routes.printTree(router);
   }
 
   @override
